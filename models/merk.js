@@ -20,6 +20,4 @@ const Merk = db.define("merk", {
 export default Merk;
 
 
-(async () => {
-  await db.sync();
-})();
+

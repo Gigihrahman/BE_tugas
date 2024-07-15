@@ -1,6 +1,6 @@
 import "dotenv/config";
 import axios from "axios";
-const API_KEY= process.env.API_ONGKIR_KEY;
+const API_KEY = process.env.API_ONGKIR_KEY;
 axios.defaults.baseURL = "https://pro.rajaongkir.com/api/";
 axios.defaults.headers.common["key"] = API_KEY;
 axios.defaults.headers.post["Content-Type"] =
@@ -21,4 +21,3 @@ export const cekCost = async (weights, destiny) => {
   console.log(response.data.rajaongkir.results[0].costs[1].cost[0].value);
   return response.data.rajaongkir.results[0].costs[1].cost[0].value;
 };
-// Contoh penggunaan fungsi

@@ -49,6 +49,3 @@ const User = db.define(
 );
 export default User;
 
-(async () => {
-  await db.sync();
-})();

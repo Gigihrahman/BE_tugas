@@ -61,9 +61,14 @@ export const register =async(req,res)=>{
   const province = req.body.province || 0;
   const city = req.body.city|| 0;
   const subdistricts = req.body.subdistrict|| 0;
-   if (!username || !confirmPassword || !password){return res.status(401).json({msg:"missing required data"})}
-  
-if (password !== confirmPassword) return res.status(401).json({msg: "confirm password not same"})
+   if (!username || !confirmPassword || !password) {
+     return res
+       .status(401)
+       .json({ message: "missing required data", success: false });
+   }
+
+   if (password !== confirmPassword)
+     return res.status(401).json({ message: "confirm password not same" });
 
   const user = await User.create({username:username,email:email,password:password,province_code:province,city_code:city,subdistricts_code:subdistricts})
 

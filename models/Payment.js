@@ -29,10 +29,11 @@ const Payment = db.define("Payment", {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  token: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
 });
 
 export default Payment;
 
-(async () => {
-  await db.sync();
-})();
