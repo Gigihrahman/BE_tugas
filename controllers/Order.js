@@ -5,6 +5,8 @@ import Payment from "../models/Payment.js";
 import ItemDetail from "../models/Itemdetails.js";
 import { uuid } from "uuidv4";
 import { cekCost } from "../coba.js";
+import { jwtDecode } from "jwt-decode";
+import User from "../models/userModel.js";
 
 const key = process.env.SERVER_KEY;
 let snap = new Midtrans.Snap({
@@ -13,18 +15,22 @@ let snap = new Midtrans.Snap({
 });
 export const order = async (req, res) => {
   try {
-    const { cart, destination, id } = req.body;
+    const { cart } = req.body;
+    const tokenUser = req.headers["token"];
+    const decoded = jwtDecode(tokenUser);
+    const idUser = decoded.id;
+    const destinasi = await User.findOne({ where: { id: idUser } });
     const status = "Pending";
     // id harusnya diganti data dari jwt decode
     console.log(cart);
-    console.log(key + "ini keynya");
+    const subdistricts = destinasi.subdistricts_code;
     const item_details = await item_detail(cart);
     console.log(item_details);
     const total_prices = await calculateTotal(cart);
     console.log(total_prices);
     const id_transaction = uuid();
     const totalWeight = await calculateTotalWeight(cart);
-    const costOngkir = await cekCost(totalWeight, destination);
+    const costOngkir = await cekCost(totalWeight, subdistricts);
     const endPrice = costOngkir + total_prices;
 
     let parameter = {
@@ -37,7 +43,7 @@ export const order = async (req, res) => {
     item_details.map(async (data) => {
       await ItemDetail.create({
         payment_id: id_transaction,
-        product_id: id,
+        product_id: data.id,
         quantity: data.quantity * data.quantity,
         total_price: data.price,
       });
@@ -46,7 +52,7 @@ export const order = async (req, res) => {
     const token = await snap.createTransactionToken(parameter);
     await Payment.create({
       id: id_transaction,
-      user_id: id, // id harusnya diganti data dari jwt decode
+      user_id: idUser, // id harusnya diganti data dari jwt decode
       gross_amount: endPrice,
       transaction_status: status,
       token: token,

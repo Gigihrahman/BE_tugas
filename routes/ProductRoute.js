@@ -12,6 +12,7 @@ import { login, logout, register } from "../controllers/user.js";
 import { order } from "../controllers/Order.js";
 import { province, city, subdistrict } from "../controllers/dataOngkir.js";
 import { getMerk } from "../controllers/getMerk.js";
+import { ongkir } from "../controllers/ongkirUser.js";
 const router = express.Router();
 
 router.get("/products", getProducts);
@@ -22,12 +23,15 @@ router.delete("/products/:id", deleteProduct);
 router.post("/productscart", getProductCart);
 
 //merk
-router.get('/merk',getMerk)
+router.get("/merk", getMerk);
 
-router.post("/login", login)
-router.delete("/logout",logout)
-router.post('/register',register)
-router.post('/order',order)
+router.post("/login", login);
+router.delete("/logout", logout);
+router.post("/register", register);
+router.post("/order", order);
+
+//ongkir
+router.post("/ongkir", ongkir);
 
 //routing alamat
 router.get('/provinces',province)

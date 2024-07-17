@@ -30,7 +30,7 @@ export const getProducts = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log(error.message);
+    res.status(500).json({ message: error });
   }
 };
 
@@ -196,7 +196,7 @@ export const getProductCart = async (req, res) => {
     const productId = carts.map((data) => data.id);
 
     const product = await Product.findAll({ where: { id: productId } });
-    console.log(product);
+
     res.status(200).json({ product: product });
   } catch (error) {
     console.log(error);
