@@ -1,9 +1,11 @@
 import { Sequelize } from "sequelize";
 import db from "../config/Database.js";
 
-import  bcrypt  from 'bcrypt';
+import bcrypt from "bcrypt";
 
 const { DataTypes } = Sequelize;
+import Payment from "./Payment.js";
+import ItemDetail from "./Itemdetails.js";
 
 const User = db.define(
   "user",
@@ -38,14 +40,15 @@ const User = db.define(
       type: DataTypes.INTEGER,
     },
   },
+
   {
     hooks: {
       beforeCreate: async (user) => {
-        const salt = await bcrypt.genSalt(10); // Adjust salt rounds as needed
+        const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(user.password, salt);
       },
     },
   }
 );
-export default User;
 
+export default User;

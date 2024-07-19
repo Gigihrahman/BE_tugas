@@ -13,6 +13,10 @@ import { order } from "../controllers/Order.js";
 import { province, city, subdistrict } from "../controllers/dataOngkir.js";
 import { getMerk } from "../controllers/getMerk.js";
 import { ongkir } from "../controllers/ongkirUser.js";
+import {
+  detailPaymentUser,
+  historyPaymentUser,
+} from "../controllers/historyPayment.js";
 const router = express.Router();
 
 router.get("/products", getProducts);
@@ -34,9 +38,13 @@ router.post("/order", order);
 router.post("/ongkir", ongkir);
 
 //routing alamat
-router.get('/provinces',province)
-router.get('/cities',city)
-router.get('/subdistricts',subdistrict)
+router.get("/provinces", province);
+router.get("/cities", city);
+router.get("/subdistricts", subdistrict);
 // router.get('/products/category',getProductBycategori)
+
+//payment history
+router.get("/paymentuser", historyPaymentUser);
+router.post("/detailPaymentUser/:id", detailPaymentUser);
 
 export default router;

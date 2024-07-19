@@ -1,6 +1,9 @@
 import { Sequelize } from "sequelize";
 import db from "../config/Database.js";
 const { DataTypes } = Sequelize;
+import User from "./userModel.js";
+import Product from "./ProductModel.js";
+import Payment from "./Payment.js";
 
 const ItemDetail = db.define("ItemDetail", {
   id: {
@@ -11,14 +14,26 @@ const ItemDetail = db.define("ItemDetail", {
   payment_id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
+    references: {
+      model: Payment,
+      key: "id",
+    },
   },
   user_id: {
     type: DataTypes.INTEGER,
     allowNull: true,
+    references: {
+      model: User,
+      key: "id",
+    },
   },
   product_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    references: {
+      model: Product,
+      key: "id",
+    },
   },
   quantity: {
     type: DataTypes.INTEGER,
@@ -32,6 +47,6 @@ const ItemDetail = db.define("ItemDetail", {
 
 // Define associations (optional)
 // ItemDetail.belongsTo(User, { foreignKey: 'user_id' });
-// ItemDetail.belongsTo(Product, { foreignKey: 'product_id' });
+
 
 export default ItemDetail;

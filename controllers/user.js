@@ -10,7 +10,7 @@ export const login = async (req, res) => {
       where: { username },
     });
     if (!user) {
-      return res.status(404).json("Email not found");
+      return res.status(404).json("User not found");
     }
 
     // Verify password
@@ -20,7 +20,10 @@ export const login = async (req, res) => {
     }
 
     // Authenticate user with jwt
-    const token = jwt.sign({ id: user.id }, "secretkey");
+    const token = jwt.sign(
+      { id: user.id, username: user.username },
+      "secretkey"
+    );
 
     res.status(200).send({
       id: user.id,

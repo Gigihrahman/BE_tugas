@@ -1,5 +1,7 @@
 import { Sequelize } from "sequelize";
 import db from "../config/Database.js";
+import ItemDetail from "./Itemdetails.js";
+import User from "./userModel.js";
 const { DataTypes } = Sequelize;
 
 const Payment = db.define("Payment", {
@@ -10,6 +12,10 @@ const Payment = db.define("Payment", {
   },
   user_id: {
     type: DataTypes.INTEGER,
+    references: {
+      model: User,
+      key: "id",
+    },
   },
 
   transaction_id: {
@@ -34,6 +40,7 @@ const Payment = db.define("Payment", {
     allowNull: true,
   },
 });
+
 
 export default Payment;
 
