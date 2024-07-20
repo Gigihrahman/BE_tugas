@@ -1,6 +1,7 @@
-import Payment from "../models/Payment.js";
+import { Payment } from "../models/allModel.js";
 import { jwtDecode } from "jwt-decode";
-import ItemDetail from "../models/Itemdetails.js";
+import { ItemDetail } from "../models/allModel.js";
+import { Product } from "../models/allModel.js";
 
 export const historyPaymentUser = async (req, res) => {
   try {
@@ -15,11 +16,20 @@ export const historyPaymentUser = async (req, res) => {
 };
 
 export const detailPaymentUser = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const data = await ItemDetail.findAll({ where: { id: id } });
-    res.status(200).json({ data });
-  } catch (error) {
-    res.status(400).json({ message: "data not found" });
-  }
+  const id = req.params.id;
+  const data = await Payment.findAll({
+    where: {
+      id: id,
+    },
+    include: {
+      model: ItemDetail,
+      as: "itemDetails",
+      include: {
+        model: Product,
+      },
+    },
+  });
+  console.log(data);
+
+  res.status(200).json({ data });
 };

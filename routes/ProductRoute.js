@@ -20,6 +20,7 @@ import {
 const router = express.Router();
 
 router.get("/products", getProducts);
+router.post("/productsview", getProducts);
 router.get("/products/:id", getProductById);
 router.post("/products", saveProduct);
 router.patch("/products/:id", updateProduct);

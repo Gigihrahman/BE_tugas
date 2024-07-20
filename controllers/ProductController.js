@@ -1,13 +1,13 @@
-import Product from "../models/ProductModel.js";
+import { Product } from "../models/allModel.js";
 import path from "path";
 import fs from "fs";
 import { jwtDecode } from "jwt-decode";
-import User from "../models/userModel.js";
+import { User } from "../models/allModel.js";
 
 export const getProducts = async (req, res) => {
   try {
     const page = parseInt(req.body.page) || 1; // Get page number from request query or default to 1
-    const limit = parseInt(req.body.limit) || 10; // Get page size or default to 10
+    const limit = 10; // Get page size or default to 10
     const offset = (page - 1) * limit;
 
     const hasil = await Product.findAll({ limit, offset });
@@ -202,9 +202,3 @@ export const getProductCart = async (req, res) => {
     console.log(error);
   }
 };
-
-
-
-    
-    
-    

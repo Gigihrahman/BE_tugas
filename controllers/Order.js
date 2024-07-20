@@ -1,12 +1,12 @@
 import "dotenv/config";
 import Midtrans from "midtrans-client";
-import Product from "../models/ProductModel.js";
-import Payment from "../models/Payment.js";
-import ItemDetail from "../models/Itemdetails.js";
+import { Product } from "../models/allModel.js";
+import { Payment } from "../models/allModel.js";
+import { ItemDetail } from "../models/allModel.js";
 import { uuid } from "uuidv4";
 import { cekCost } from "../coba.js";
 import { jwtDecode } from "jwt-decode";
-import User from "../models/userModel.js";
+import { User } from "../models/allModel.js";
 
 const key = process.env.SERVER_KEY;
 let snap = new Midtrans.Snap({

@@ -1,7 +1,6 @@
-import User from "../models/userModel.js";
+import { User } from "../models/allModel.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-
 
 export const login = async (req, res) => {
   try {
@@ -55,30 +54,33 @@ export const logout = async (req, res) => {
     });
   }
 };
-export const register =async(req,res)=>{
+export const register = async (req, res) => {
   const saltAround = 10;
   const username = req.body.username;
   const email = req.body.email;
   const password = req.body.password;
   const confirmPassword = req.body.confirmPassword;
   const province = req.body.province || 0;
-  const city = req.body.city|| 0;
-  const subdistricts = req.body.subdistrict|| 0;
-   if (!username || !confirmPassword || !password) {
-     return res
-       .status(401)
-       .json({ message: "missing required data", success: false });
-   }
+  const city = req.body.city || 0;
+  const subdistricts = req.body.subdistrict || 0;
+  if (!username || !confirmPassword || !password) {
+    return res
+      .status(401)
+      .json({ message: "missing required data", success: false });
+  }
 
-   if (password !== confirmPassword)
-     return res.status(401).json({ message: "confirm password not same" });
+  if (password !== confirmPassword)
+    return res.status(401).json({ message: "confirm password not same" });
 
-  const user = await User.create({username:username,email:email,password:password,province_code:province,city_code:city,subdistricts_code:subdistricts})
+  const user = await User.create({
+    username: username,
+    email: email,
+    password: password,
+    province_code: province,
+    city_code: city,
+    subdistricts_code: subdistricts,
+  });
 
- 
- 
   const token = jwt.sign({ id: user.id }, "secretkey");
-  res.status(200).send({ id: user.id, username: user.username, token: token});
-
-
-}
+  res.status(200).send({ id: user.id, username: user.username, token: token });
+};

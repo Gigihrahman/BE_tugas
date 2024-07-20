@@ -1,7 +1,7 @@
 import { jwtDecode } from "jwt-decode";
-import User from "../models/userModel.js";
+import { User } from "../models/allModel.js";
 import { cekCost } from "./cekCost.js";
-import Product from "../models/ProductModel.js";
+import { Product } from "../models/allModel.js";
 import path from "path";
 import fs from "fs";
 

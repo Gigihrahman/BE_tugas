@@ -1,10 +1,11 @@
 import { Sequelize } from "sequelize";
 import db from "../config/Database.js";
-const { DataTypes } = Sequelize;
 import bcrypt from "bcrypt";
 
+const { DataTypes } = Sequelize;
+
 const User = db.define(
-  "user",
+  "User",
   {
     id: {
       type: DataTypes.INTEGER,
@@ -35,9 +36,13 @@ const User = db.define(
     subdistricts_code: {
       type: DataTypes.INTEGER,
     },
+    full_address: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   },
-
   {
+    tableName: "users",
     hooks: {
       beforeCreate: async (user) => {
         const salt = await bcrypt.genSalt(10);
@@ -46,20 +51,26 @@ const User = db.define(
     },
   }
 );
-const Merk = db.define("merk", {
-  id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-    allowNull: true,
+const Merk = db.define(
+  "Merk",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+      allowNull: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-});
+  {
+    tableName: "merks",
+  }
+);
 const Product = db.define(
-  "product",
+  "Product",
   {
     id: {
       type: DataTypes.INTEGER,
@@ -100,8 +111,13 @@ const Product = db.define(
       type: DataTypes.STRING,
       allowNull: true, // Allow URL to be null
     },
+    stock: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
+    tableName: "products",
     indexes: [
       {
         unique: true,
@@ -111,100 +127,115 @@ const Product = db.define(
   }
 );
 
-const Payment = db.define("Payment", {
-  id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    primaryKey: true,
-  },
-  user_id: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: User,
-      key: "id",
+const Payment = db.define(
+  "Payment",
+  {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+    },
+    user_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: User,
+        key: "id",
+      },
+    },
+
+    transaction_id: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true,
+    },
+    gross_amount: {
+      type: DataTypes.DECIMAL(10, 2), // Adjust decimal precision as needed
+      allowNull: false,
+    },
+    bank: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    transaction_status: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    token: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
+  {
+    tableName: "payments",
+  }
+);
 
-  transaction_id: {
-    type: DataTypes.STRING,
-    allowNull: true,
-    unique: true,
-  },
-  gross_amount: {
-    type: DataTypes.DECIMAL(10, 2), // Adjust decimal precision as needed
-    allowNull: false,
-  },
-  bank: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  transaction_status: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  token: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-});
-
-const ItemDetail = db.define("ItemDetail", {
-  id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  },
-  payment_id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    references: {
-      table: "Payment",
-      key: "id",
+const ItemDetail = db.define(
+  "ItemDetail",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    payment_id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      references: {
+        model: "payments",
+        key: "id",
+      },
+    },
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: User,
+        key: "id",
+      },
+    },
+    product_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: Product,
+        key: "id",
+      },
+    },
+    quantity: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    total_price: {
+      type: DataTypes.DECIMAL(10, 2), // Adjust decimal precision as needed
+      allowNull: false,
     },
   },
-  user_id: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-    references: {
-      table: "user",
-      key: "id",
-    },
-  },
-  product_id: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-    references: {
-      table: "product",
-      key: "id",
-    },
-  },
-  quantity: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  total_price: {
-    type: DataTypes.DECIMAL(10, 2), // Adjust decimal precision as needed
-    allowNull: false,
-  },
-});
-Payment.hasMany(ItemDetail);
-ItemDetail.belongsTo(Payment, { as: "payment", foreignKey: "payment_id" });
-Product.hasMany(ItemDetail); // Typo correction: Use 'Product' instead of 'Produk'
-ItemDetail.belongsTo(Product, { as: "product", foreignKey: "product_id" });
+  {
+    tableName: "item_details",
+  }
+);
 
-User.hasMany(ItemDetail);
-ItemDetail.belongsTo(User, { as: "user", foreignKey: "user_id" });
+Payment.hasMany(ItemDetail, { as: "itemDetails", foreignKey: "payment_id" });
 
-User.hasMany(Payment, { as: "payments", foreignKey: "user_id" });
 Payment.belongsTo(User, { as: "user", foreignKey: "user_id" });
-Merk.hasMany(Product, { as: "products", foreignKey: "merkId" });
+
+ItemDetail.belongsTo(Product, { foreignKey: "product_id" });
+ItemDetail.belongsTo(Payment, { foreignKey: "payment_id" });
+ItemDetail.belongsTo(User, { foreignKey: "user_id" });
+
+Product.hasMany(ItemDetail, { as: "itemDetails", foreignKey: "product_id" });
 Product.belongsTo(Merk, { as: "merk", foreignKey: "merkId" });
 
-export { User, Product, Merk, Payment, ItemDetail };
+User.hasMany(ItemDetail, { as: "itemDetails", foreignKey: "user_id" });
+
+User.hasMany(Payment, { as: "payments", foreignKey: "user_id" });
+Merk.hasMany(Product, { as: "products", foreignKey: "merkId" });
 
 (async () => {
   await db.sync();
 })();
 
+export { User, Product, Merk, Payment, ItemDetail };
 // Define associations (optional)
 // ItemDetail.belongsTo(User, { foreignKey: 'user_id' });
