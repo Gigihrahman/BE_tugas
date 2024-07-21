@@ -11,7 +11,7 @@ import {
 import { login, logout, register } from "../controllers/user.js";
 import { order } from "../controllers/Order.js";
 import { province, city, subdistrict } from "../controllers/dataOngkir.js";
-import { getMerk } from "../controllers/getMerk.js";
+import { getMerk, saveMerk, updateMerk } from "../controllers/getMerk.js";
 import { ongkir } from "../controllers/ongkirUser.js";
 import {
   detailPaymentUser,
@@ -47,5 +47,10 @@ router.get("/subdistricts", subdistrict);
 //payment history
 router.get("/paymentuser", historyPaymentUser);
 router.post("/detailPaymentUser/:id", detailPaymentUser);
+
+//merk
+router.post("/merk", saveMerk);
+router.patch("/merk/:id", updateMerk);
+
 
 export default router;

@@ -6,8 +6,9 @@ import { User } from "../models/allModel.js";
 
 export const getProducts = async (req, res) => {
   try {
-    const page = parseInt(req.body.page) || 1; // Get page number from request query or default to 1
-    const limit = 10; // Get page size or default to 10
+    const page = parseInt(req.query.page) || 1;
+    console.log(page); // Get page number from request query or default to 1
+    const limit = parseInt(req.query.limit) || 10; // Get page size or default to 10
     const offset = (page - 1) * limit;
 
     const hasil = await Product.findAll({ limit, offset });
@@ -49,7 +50,7 @@ export const getProductById = async (req, res) => {
 
 export const saveProduct = (req, res) => {
   if (req.files === null)
-    return res.status(400).json({ msg: "No File Uploaded" });
+    return res.status(400).json({ message: "No File Uploaded" });
   const name = req.body.title;
   const price = req.body.price;
   const desc = req.body.desc;
@@ -63,12 +64,12 @@ export const saveProduct = (req, res) => {
   const allowedType = [".png", ".jpg", ".jpeg"];
 
   if (!allowedType.includes(ext.toLowerCase()))
-    return res.status(422).json({ msg: "Invalid Images" });
+    return res.status(422).json({ message: "Invalid Images" });
   if (fileSize > 5000000)
-    return res.status(422).json({ msg: "Image must be less than 5 MB" });
+    return res.status(422).json({ message: "Image must be less than 5 MB" });
 
   file.mv(`./public/images/${fileName}`, async (err) => {
-    if (err) return res.status(500).json({ msg: err.message });
+    if (err) return res.status(500).json({ message: err.message });
     try {
       await Product.create({
         name: name,
@@ -79,7 +80,7 @@ export const saveProduct = (req, res) => {
         merk: merk,
         url: url,
       });
-      res.status(201).json({ msg: "Product Created Successfuly" });
+      res.status(201).json({ message: "Product Created Successfuly" });
     } catch (error) {
       console.log(error.message);
     }
@@ -92,7 +93,7 @@ export const updateProduct = async (req, res) => {
       id: req.params.id,
     },
   });
-  if (!product) return res.status(404).json({ msg: "No Data Found" });
+  if (!product) return res.status(404).json({ message: "No Data Found" });
 
   let fileName = "";
   if (req.files === null) {
@@ -106,15 +107,15 @@ export const updateProduct = async (req, res) => {
     const allowedType = [".png", ".jpg", ".jpeg"];
 
     if (!allowedType.includes(ext.toLowerCase()))
-      return res.status(422).json({ msg: "Invalid Images" });
+      return res.status(422).json({ message: "Invalid Images" });
     if (fileSize > 5000000)
-      return res.status(422).json({ msg: "Image must be less than 5 MB" });
+      return res.status(422).json({ message: "Image must be less than 5 MB" });
 
     const filepath = `./public/images/${product.image}`;
     fs.unlinkSync(filepath);
 
     file.mv(`./public/images/${fileName}`, (err) => {
-      if (err) return res.status(500).json({ msg: err.message });
+      if (err) return res.status(500).json({ message: err.message });
     });
   }
   const name = req.body.title;
@@ -141,7 +142,7 @@ export const updateProduct = async (req, res) => {
         },
       }
     );
-    res.status(200).json({ msg: "Product Updated Successfuly" });
+    res.status(200).json({ message: "Product Updated Successfuly" });
   } catch (error) {
     console.log(error.message);
   }
@@ -153,7 +154,7 @@ export const deleteProduct = async (req, res) => {
       id: req.params.id,
     },
   });
-  if (!product) return res.status(404).json({ msg: "No Data Found" });
+  if (!product) return res.status(404).json({ message: "No Data Found" });
 
   try {
     const filepath = `./public/images/${product.image}`;
@@ -163,7 +164,7 @@ export const deleteProduct = async (req, res) => {
         id: req.params.id,
       },
     });
-    res.status(200).json({ msg: "Product Deleted Successfuly" });
+    res.status(200).json({ message: "Product Deleted Successfuly" });
   } catch (error) {
     console.log(error.message);
   }

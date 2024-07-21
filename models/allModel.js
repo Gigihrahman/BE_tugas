@@ -64,6 +64,14 @@ const Merk = db.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    image: {
+      type: DataTypes.STRING,
+      allowNull: true, // Allow images to be null
+    },
+    url: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   },
   {
     tableName: "merks",
