@@ -16,6 +16,8 @@ import { ongkir } from "../controllers/ongkirUser.js";
 import {
   detailPaymentUser,
   historyPaymentUser,
+  detailPaymentAdmin,
+  historyPaymentAdmin,
 } from "../controllers/historyPayment.js";
 const router = express.Router();
 
@@ -47,6 +49,9 @@ router.get("/subdistricts", subdistrict);
 //payment history
 router.get("/paymentuser", historyPaymentUser);
 router.post("/detailPaymentUser/:id", detailPaymentUser);
+
+router.get("/paymentadmin", historyPaymentAdmin);
+router.post("/detailPaymentAdmin/:id", detailPaymentAdmin);
 
 //merk
 router.post("/merk", saveMerk);

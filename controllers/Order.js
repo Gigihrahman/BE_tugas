@@ -40,14 +40,7 @@ export const order = async (req, res) => {
       },
     };
 
-    item_details.map(async (data) => {
-      await ItemDetail.create({
-        payment_id: id_transaction,
-        product_id: data.id,
-        quantity: data.quantity * data.quantity,
-        total_price: data.price,
-      });
-    });
+    
 
     const token = await snap.createTransactionToken(parameter);
     await Payment.create({
@@ -56,6 +49,14 @@ export const order = async (req, res) => {
       gross_amount: endPrice,
       transaction_status: status,
       token: token,
+    });
+    item_details.map(async (data) => {
+      await ItemDetail.create({
+        payment_id: id_transaction,
+        product_id: data.id,
+        quantity: data.quantity * data.quantity,
+        total_price: data.price,
+      });
     });
     console.log(token);
     res.status(200).json({ token });
