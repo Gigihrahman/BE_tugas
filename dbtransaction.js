@@ -1,8 +1,7 @@
 const Sequelize = require("sequelize");
 
-async function purchaseProducts(cart) {
-  const transaction = await sequelize.transaction(); // Begin transaction
-
+const transaction = await sequelize.transaction(); // Begin transaction
+async function purchaseProducts(cart, transaction) {
   try {
     for (const item of cart) {
       const productId = item.idproduct;
@@ -27,7 +26,7 @@ async function purchaseProducts(cart) {
     }
 
     // All validations and updates successful, commit the transaction
-    await transaction.commit();
+
     return { message: "Purchase successful" };
   } catch (error) {
     // Rollback the transaction on any errors

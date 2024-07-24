@@ -7,6 +7,8 @@ import { uuid } from "uuidv4";
 import { cekCost } from "../coba.js";
 import { jwtDecode } from "jwt-decode";
 import { User } from "../models/allModel.js";
+import db from "../config/Database.js";
+const sequelize = db;
 
 const key = process.env.SERVER_KEY;
 let snap = new Midtrans.Snap({
@@ -14,9 +16,15 @@ let snap = new Midtrans.Snap({
   serverKey: "SB-Mid-server-Z0rvNu6HVUeHLkPVbFWgDzHt",
 });
 export const order = async (req, res) => {
+  const transaction = await sequelize.transaction();
   try {
     const { cart } = req.body;
     const tokenUser = req.headers["token"];
+    console.log("ini token user:" + tokenUser);
+    throw new Error("error bosku");
+
+    purchaseProducts(cart, transaction, res);
+
     const decoded = jwtDecode(tokenUser);
     const idUser = decoded.id;
     const destinasi = await User.findOne({ where: { id: idUser } });
@@ -40,28 +48,37 @@ export const order = async (req, res) => {
       },
     };
 
-    
-
-    const token = await snap.createTransactionToken(parameter);
-    await Payment.create({
-      id: id_transaction,
-      user_id: idUser, // id harusnya diganti data dari jwt decode
-      gross_amount: endPrice,
-      transaction_status: status,
-      token: token,
-    });
-    item_details.map(async (data) => {
-      await ItemDetail.create({
-        payment_id: id_transaction,
-        product_id: data.id,
-        quantity: data.quantity * data.quantity,
-        total_price: data.price,
-      });
-    });
-    console.log(token);
-    res.status(200).json({ token });
+    const tokenPay = await snap.createTransactionToken(parameter);
+    const payments = await Payment.create(
+      {
+        id: id_transaction,
+        user_id: idUser, // id harusnya diganti data dari jwt decode
+        gross_amount: endPrice,
+        transaction_status: status,
+        token: tokenPay,
+      },
+      { transaction }
+    );
+    console.log(payments);
+    item_details.map(
+      async (data) => {
+        await ItemDetail.create({
+          payment_id: id_transaction,
+          product_id: data.id,
+          quantity: data.quantity * data.quantity,
+          total_price: data.price,
+        });
+      },
+      { transaction }
+    );
+    console.log(tokenPay);
+    await transaction.commit();
+    res.status(200).json({ tokenPay });
   } catch (error) {
-    console.log(error);
+    // await transaction.rollback();
+
+    console.log(`ini error` + error);
+    res.status(200).json({ message: error.message });
   }
 };
 
@@ -128,4 +145,34 @@ async function calculateTotalWeight(cart) {
   }, Promise.resolve(0));
 
   return sum;
+}
+
+async function purchaseProducts(cart, transaction, res) {
+  for (const item of cart) {
+    const productId = item.id;
+    const quantity = item.qty;
+
+    // Lock the product row for update
+    const product = await Product.findByPk(productId, {
+      // lock: true,
+      transaction,
+    });
+
+    if (!product) {
+      throw new Error(`Product with ID ${productId} not found`);
+      return;
+    }
+
+    if (product.stock < quantity) {
+      throw new Error(`Insufficient stock for product with ID ${productId}`);
+      return;
+    }
+
+    // Update stock after successful validation
+    await product.decrement("stock", { by: quantity, transaction });
+  }
+
+  // All validations and updates successful, commit the transaction
+
+  return { message: "Purchase successful" };
 }

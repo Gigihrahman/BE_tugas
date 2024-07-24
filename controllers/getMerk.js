@@ -6,10 +6,17 @@ export const getMerk = async (req, res) => {
   const merk = await Merk.findAll({});
   res.status(200).json({ merk });
 };
+export const getMerkByid = async (req, res) => {
+  const { id } = req.params;
+
+  const merk = await Merk.findOne({ where: { id: id } });
+  res.status(200).json({ merk });
+};
 
 export const saveMerk = async (req, res) => {
   const name = req.body.name;
   const file = req.files.file;
+
   if (!file) return res.status(404).json({ message: "upload image please" });
   const fileSize = file.data.length;
   const ext = path.extname(file.name);

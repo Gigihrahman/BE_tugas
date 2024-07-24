@@ -63,6 +63,12 @@ export const register = async (req, res) => {
   const province = req.body.province || 0;
   const city = req.body.city || 0;
   const subdistricts = req.body.subdistrict || 0;
+  const emailExist = await User.findOne({ where: { email: email } });
+
+  if (emailExist)
+    return res.status(400).json({ message: "This email was used" });
+
+
   if (!username || !confirmPassword || !password) {
     return res
       .status(401)

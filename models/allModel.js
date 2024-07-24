@@ -194,14 +194,7 @@ const ItemDetail = db.define(
         key: "id",
       },
     },
-    user_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: User,
-        key: "id",
-      },
-    },
+
     product_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -223,6 +216,20 @@ const ItemDetail = db.define(
     tableName: "item_details",
   }
 );
+const admin = db.define(
+  "admin",
+  {
+    username: {
+      type: DataTypes.STRING,
+    },
+    password: {
+      type: DataTypes.STRING,
+    },
+  },
+  {
+    tableName: "admin",
+  }
+);
 
 Payment.hasMany(ItemDetail, { as: "itemDetails", foreignKey: "payment_id" });
 
@@ -230,19 +237,17 @@ Payment.belongsTo(User, { as: "user", foreignKey: "user_id" });
 
 ItemDetail.belongsTo(Product, { foreignKey: "product_id" });
 ItemDetail.belongsTo(Payment, { foreignKey: "payment_id" });
-ItemDetail.belongsTo(User, { foreignKey: "user_id" });
+
 
 Product.hasMany(ItemDetail, { as: "itemDetails", foreignKey: "product_id" });
 Product.belongsTo(Merk, { as: "merk", foreignKey: "merkId" });
 
-User.hasMany(ItemDetail, { as: "itemDetails", foreignKey: "user_id" });
-
 User.hasMany(Payment, { as: "payments", foreignKey: "user_id" });
 Merk.hasMany(Product, { as: "products", foreignKey: "merkId" });
 
-(async () => {
-  await db.sync();
-})();
+// (async () => {
+//   await db.sync();
+// })();
 
 export { User, Product, Merk, Payment, ItemDetail };
 // Define associations (optional)
