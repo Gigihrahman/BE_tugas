@@ -13,31 +13,35 @@ const User = db.define(
       autoIncrement: true,
     },
     username: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(100),
       allowNull: false,
       unique: true,
     },
     email: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(100),
       allowNull: false,
       unique: true,
     },
+    number_phone: {
+      type: DataTypes.STRING(13),
+      allowNull: false,
+    },
     password: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(80),
       allowNull: false,
       lowercase: true,
     },
     province_code: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER(5),
     },
     city_code: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER(5),
     },
     subdistricts_code: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER(5),
     },
     full_address: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: true,
     },
   },
@@ -48,6 +52,19 @@ const User = db.define(
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(user.password, salt);
       },
+
+      beforeBulkUpdate: async (options) => {
+        // Ensure that there is a password to hash
+        if (options.attributes.password) {
+          // Generate salt
+          const salt = await bcrypt.genSalt(10);
+          // Hash the new password
+          options.attributes.password = await bcrypt.hash(
+            options.attributes.password,
+            salt
+          );
+        }
+      },
     },
   }
 );
@@ -55,13 +72,13 @@ const Merk = db.define(
   "Merk",
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER(4),
       autoIncrement: true,
       primaryKey: true,
       allowNull: true,
     },
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(100),
       allowNull: true,
     },
     image: {
@@ -81,29 +98,29 @@ const Product = db.define(
   "Product",
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER(10),
       primaryKey: true,
       autoIncrement: true,
     },
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(100),
       allowNull: false, // Make name a required field (optional)
     },
     image: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(100),
       allowNull: true, // Allow images to be null
     },
     price: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER(8),
       allowNull: false, // Make price a required field (optional)
     },
     description: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: true, // Allow descriptions to be null
     },
     berat: {
       // Assuming 'berat' refers to weight
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER(4),
       allowNull: true, // Allow weight to be null
     },
     merkId: {
@@ -120,7 +137,7 @@ const Product = db.define(
       allowNull: true, // Allow URL to be null
     },
     stock: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER(4),
       allowNull: true,
     },
   },
@@ -144,7 +161,7 @@ const Payment = db.define(
       primaryKey: true,
     },
     user_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER(5),
       references: {
         model: User,
         key: "id",
@@ -157,13 +174,10 @@ const Payment = db.define(
       unique: true,
     },
     gross_amount: {
-      type: DataTypes.DECIMAL(10, 2), // Adjust decimal precision as needed
+      type: DataTypes.INTEGER(10), // Adjust decimal precision as needed
       allowNull: false,
     },
-    bank: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
+
     transaction_status: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -182,7 +196,7 @@ const ItemDetail = db.define(
   "ItemDetail",
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER(5),
       autoIncrement: true,
       primaryKey: true,
     },
@@ -196,7 +210,7 @@ const ItemDetail = db.define(
     },
 
     product_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER(10),
       allowNull: true,
       references: {
         model: Product,
@@ -204,11 +218,11 @@ const ItemDetail = db.define(
       },
     },
     quantity: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER(3),
       allowNull: false,
     },
     total_price: {
-      type: DataTypes.DECIMAL(10, 2), // Adjust decimal precision as needed
+      type: DataTypes.INTEGER(8), // Adjust decimal precision as needed
       allowNull: false,
     },
   },
@@ -216,14 +230,14 @@ const ItemDetail = db.define(
     tableName: "item_details",
   }
 );
-const admin = db.define(
-  "admin",
+const Admin = db.define(
+  "Admin",
   {
-    username: {
-      type: DataTypes.STRING,
+    name: {
+      type: DataTypes.STRING(10),
     },
     password: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(80),
     },
   },
   {
@@ -238,17 +252,16 @@ Payment.belongsTo(User, { as: "user", foreignKey: "user_id" });
 ItemDetail.belongsTo(Product, { foreignKey: "product_id" });
 ItemDetail.belongsTo(Payment, { foreignKey: "payment_id" });
 
-
 Product.hasMany(ItemDetail, { as: "itemDetails", foreignKey: "product_id" });
 Product.belongsTo(Merk, { as: "merk", foreignKey: "merkId" });
 
 User.hasMany(Payment, { as: "payments", foreignKey: "user_id" });
 Merk.hasMany(Product, { as: "products", foreignKey: "merkId" });
 
-// (async () => {
-//   await db.sync();
-// })();
+(async () => {
+  await db.sync();
+})();
 
-export { User, Product, Merk, Payment, ItemDetail };
+export { User, Product, Merk, Payment, ItemDetail, Admin };
 // Define associations (optional)
 // ItemDetail.belongsTo(User, { foreignKey: 'user_id' });
