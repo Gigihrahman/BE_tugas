@@ -1,6 +1,7 @@
 import { User } from "../models/allModel.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { jwtDecode } from "jwt-decode";
 
 export const login = async (req, res) => {
   try {
@@ -55,7 +56,6 @@ export const logout = async (req, res) => {
   }
 };
 export const register = async (req, res) => {
-  const saltAround = 10;
   const username = req.body.username;
   const email = req.body.email;
   const password = req.body.password;
@@ -63,12 +63,49 @@ export const register = async (req, res) => {
   const province = req.body.province || 0;
   const city = req.body.city || 0;
   const subdistricts = req.body.subdistrict || 0;
+  const full_address = req.body.full_address;
   const emailExist = await User.findOne({ where: { email: email } });
-
+  const numberPhone = req.body.numberPhone;
+  if (!username || !confirmPassword || !password || !full_address) {
+    return res
+      .status(401)
+      .json({ message: "missing required data", success: false });
+  }
   if (emailExist)
     return res.status(400).json({ message: "This email was used" });
 
+  if (password !== confirmPassword)
+    return res.status(401).json({ message: "confirm password not same" });
 
+  const user = await User.create({
+    username: username,
+    email: email,
+    number_phone: numberPhone,
+    password: password,
+    province_code: province,
+    city_code: city,
+    subdistricts_code: subdistricts,
+    full_address: full_address,
+  });
+
+  const token = jwt.sign({ id: user.id }, "secretkey");
+  res.status(200).send({ id: user.id, username: user.username, token: token });
+};
+
+export const editProfileUser = async (req, res) => {
+  const tokenUser = req.headers["token"];
+
+  const decoded = jwtDecode(tokenUser);
+  const idUser = decoded.id;
+  const username = req.body.username;
+  const numberPhone = req.body.numberPhone;
+
+  const password = req.body.password;
+  const confirmPassword = req.body.confirmPassword;
+  const province = req.body.province || 0;
+  const city = req.body.city || 0;
+  const subdistricts = req.body.subdistrict || 0;
+  const full_address = req.body.full_address;
   if (!username || !confirmPassword || !password) {
     return res
       .status(401)
@@ -78,15 +115,31 @@ export const register = async (req, res) => {
   if (password !== confirmPassword)
     return res.status(401).json({ message: "confirm password not same" });
 
-  const user = await User.create({
-    username: username,
-    email: email,
-    password: password,
-    province_code: province,
-    city_code: city,
-    subdistricts_code: subdistricts,
-  });
+  await User.update(
+    {
+      username: username,
+      password: password,
+      number_phone: numberPhone,
+      province_code: province,
+      city_code: city,
+      subdistricts_code: subdistricts,
+      full_address: full_address,
+    },
+    {
+      where: {
+        id: idUser,
+      },
+    }
+  );
+  res.status(200).json({ message: "Your profile was updated" });
+};
 
-  const token = jwt.sign({ id: user.id }, "secretkey");
-  res.status(200).send({ id: user.id, username: user.username, token: token });
+export const getUserByid = async (req, res) => {
+  const tokenUser = req.headers["token"];
+
+  const decoded = jwtDecode(tokenUser);
+  const idUser = decoded.id;
+
+  const merk = await User.findOne({ where: { id: idUser } });
+  res.status(200).json({ merk });
 };

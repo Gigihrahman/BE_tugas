@@ -20,10 +20,8 @@ export const order = async (req, res) => {
   try {
     const { cart } = req.body;
     const tokenUser = req.headers["token"];
-    console.log("ini token user:" + tokenUser);
-    throw new Error("error bosku");
 
-    purchaseProducts(cart, transaction, res);
+    await purchaseProducts(cart, transaction, res);
 
     const decoded = jwtDecode(tokenUser);
     const idUser = decoded.id;
@@ -75,10 +73,10 @@ export const order = async (req, res) => {
     await transaction.commit();
     res.status(200).json({ tokenPay });
   } catch (error) {
-    // await transaction.rollback();
+    await transaction.rollback();
 
     console.log(`ini error` + error);
-    res.status(200).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
 
@@ -164,7 +162,8 @@ async function purchaseProducts(cart, transaction, res) {
     }
 
     if (product.stock < quantity) {
-      throw new Error(`Insufficient stock for product with ID ${productId}`);
+      console.log(product);
+      throw new Error(` ${product.name} stok kosong`);
       return;
     }
 

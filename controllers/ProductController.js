@@ -57,6 +57,7 @@ export const saveProduct = (req, res) => {
   const berat = req.body.berat;
   const file = req.files.file;
   const merk = req.body.merk;
+  const stock = req.body.stock;
   const fileSize = file.data.length;
   const ext = path.extname(file.name);
   const fileName = file.md5 + ext;
@@ -77,8 +78,9 @@ export const saveProduct = (req, res) => {
         price: price,
         description: desc,
         berat: berat,
-        merk: merk,
+        merkId: merk,
         url: url,
+        stock: stock,
       });
       res.status(201).json({ message: "Product Created Successfuly" });
     } catch (error) {
@@ -123,6 +125,7 @@ export const updateProduct = async (req, res) => {
   const desc = req.body.desc;
   const berat = req.body.berat;
   const merk = req.body.merk;
+  const stock = req.body.stock;
   const url = `${req.protocol}://${req.get("host")}/images/${fileName}`;
 
   try {
@@ -132,9 +135,10 @@ export const updateProduct = async (req, res) => {
         price: price,
         description: desc,
         berat: berat,
-        merk: merk,
+        merkId: merk,
         image: fileName,
         url: url,
+        stock: stock,
       },
       {
         where: {
@@ -170,21 +174,18 @@ export const deleteProduct = async (req, res) => {
   }
 };
 
-export const getProductBycategori = async (req, res) => {
+export const getProductByMerk = async (req, res) => {
   try {
-    const category = req.body.category;
-    const page = parseInt(req.body.page) || 1; // Get page number from request query or default to 1
-    const limit = parseInt(req.body.limit) || 10; // Get page size or default to 10
-    const offset = (page - 1) * limit;
+    const merk = req.query.merk;
+    console.log(merk);
 
     const hasil = await Product.findAll({
       where: {
-        categoty: category,
+        merkId: merk,
       },
-      limit,
-      offset,
     });
-    const totalProduk = await Product.count();
+
+    res.status(200).json({ hasil });
   } catch (error) {
     console.log(error);
   }

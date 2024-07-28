@@ -5,8 +5,8 @@ const jwtMiddleware = (request, response, next) => {
   console.log(request.path);
   if (
     request.path === "/login" ||
-    request.path === "/register" 
-  
+    request.path === "/register" ||
+    request.path === "/admin"
   ) {
     next();
   } else {

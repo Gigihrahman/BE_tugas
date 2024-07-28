@@ -86,4 +86,17 @@ export const detailPaymentAdmin = async (req, res) => {
 };
 
 
+export const notifPaymentAdmin = async (req, res) => {
+  const { order_id, transaction_id, transaction_status } = req.body;
+  await Payment.update(
+    { transaction_id, transaction_status },
+    {
+      where: {
+        id: order_id,
+      },
+    }
+  );
+};
+
+
 
