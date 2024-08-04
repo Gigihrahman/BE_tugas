@@ -1,0 +1,21 @@
+name: remote ssh command
+on: [push]
+jobs:
+
+  build:
+    name: DeployBe
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        script: | 
+            cd /var/www/backend
+		        pm2 service stop backend
+		        git pull origin main
+		        npm install
+		        pm2 service start backend
