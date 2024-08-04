@@ -14,8 +14,8 @@ jobs:
         port: ${{ secrets.PORT }}
         script: |
           cd /var/www/backend
-          pm2 stop backend
+          pm2 stop index
           git pull origin main
           npm install
-          pm2 start backend
+          pm2 start index
 
