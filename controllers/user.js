@@ -5,9 +5,9 @@ import { jwtDecode } from "jwt-decode";
 
 export const login = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
     const user = await User.findOne({
-      where: { username },
+      where: { email },
     });
     if (!user) {
       return res.status(404).json("User not found");
