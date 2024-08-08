@@ -186,6 +186,25 @@ const Payment = db.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    recipient_name: {
+      type: DataTypes.STRING(100),
+    },
+    recipient_province: {
+      type: DataTypes.INTEGER(5),
+    },
+    recipient_district: {
+      type: DataTypes.INTEGER(5),
+    },
+    recipient_subdistrict: {
+      type: DataTypes.INTEGER(5),
+    },
+    recipient_fulladdress: {
+      type: DataTypes.TEXT,
+    },
+    recipient_phoneNumber: {
+      type: DataTypes.STRING(14),
+      allowNull: false,
+    },
   },
   {
     tableName: "payments",
