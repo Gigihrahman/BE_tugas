@@ -50,6 +50,33 @@ export const subdistrict =  async (req, res) => {
   }
 }
 
+
+
+export const subdistrictbyid = async (req, res) => {
+  try {
+    const { id } = req.query; // Hanya menggunakan ID untuk mendapatkan data subdistrict
+    if (!id) {
+      return res.status(400).json({ error: "ID parameter is required" });
+    }
+
+    const response = await axios.get(
+      `https://pro.rajaongkir.com/api/subdistrict?id=${id}`, // Endpoint yang benar
+      {
+        headers: { key: API_KEY },
+      }
+    );
+
+    // Memastikan response.data berisi data yang diinginkan
+    res.json(response.data);
+  } catch (error) {
+    console.error("Error fetching subdistrict data:", error);
+    res.status(500).json({ error: "Failed to fetch data from RajaOngkir" });
+  }
+};
+
+
+
+
 export const cost = async(from,destiny)=>{
   try {
 

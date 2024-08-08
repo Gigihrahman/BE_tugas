@@ -29,7 +29,13 @@ export const order = async (req, res) => {
     const status = "Pending";
     // id harusnya diganti data dari jwt decode
     console.log(cart);
+    const name = destinasi.username;
+    const province = destinasi.province_code;
+    const city = destinasi.city_code;
     const subdistricts = destinasi.subdistricts_code;
+    const numberPhone = destinasi.number_phone;
+    console.log(numberPhone);
+    const fulladdress = destinasi.full_address;
     const item_details = await item_detail(cart);
     console.log(item_details);
     const total_prices = await calculateTotal(cart);
@@ -54,6 +60,12 @@ export const order = async (req, res) => {
         gross_amount: endPrice,
         transaction_status: status,
         token: tokenPay,
+        recipient_name: name,
+        recipient_province: province,
+        recipient_district: city,
+        recipient_subdistrict: subdistricts,
+        recipient_fulladdress: fulladdress,
+        recipient_phoneNumber: numberPhone,
       },
       { transaction }
     );
@@ -82,7 +94,6 @@ export const order = async (req, res) => {
 
 const item_detail = async (cart) => {
   try {
-    // Use Promise.all to handle an array of promises
     const details = await Promise.all(
       cart.map(async (data) => {
         const product = await Product.findOne({ where: { id: data.id } });
@@ -101,7 +112,6 @@ const item_detail = async (cart) => {
 };
 
 async function calculateTotal(cart) {
-  // Consolidate the cart to handle duplicate ids
   const consolidatedCart = cart.reduce((acc, item) => {
     const existingItem = acc.find((cartItem) => cartItem.id === item.id);
     if (existingItem) {
@@ -124,7 +134,6 @@ async function calculateTotal(cart) {
 
 ///calculate total weight
 async function calculateTotalWeight(cart) {
-  // Consolidate the cart to handle duplicate ids
   const consolidatedCart = cart.reduce((acc, item) => {
     const existingItem = acc.find((cartItem) => cartItem.id === item.id);
     if (existingItem) {
@@ -150,9 +159,8 @@ async function purchaseProducts(cart, transaction, res) {
     const productId = item.id;
     const quantity = item.qty;
 
-    // Lock the product row for update
     const product = await Product.findByPk(productId, {
-      // lock: true,
+      lock: true,
       transaction,
     });
 
@@ -163,15 +171,12 @@ async function purchaseProducts(cart, transaction, res) {
 
     if (product.stock < quantity) {
       console.log(product);
-      throw new Error(` ${product.name} stok kosong`);
+      throw new Error(` ${product.name} stok left ${product.stock}`);
       return;
     }
 
-    // Update stock after successful validation
     await product.decrement("stock", { by: quantity, transaction });
   }
-
-  // All validations and updates successful, commit the transaction
 
   return { message: "Purchase successful" };
 }

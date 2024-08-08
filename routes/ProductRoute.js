@@ -16,7 +16,12 @@ import {
   register,
 } from "../controllers/user.js";
 import { order } from "../controllers/Order.js";
-import { province, city, subdistrict } from "../controllers/dataOngkir.js";
+import {
+  province,
+  city,
+  subdistrict,
+  subdistrictbyid,
+} from "../controllers/dataOngkir.js";
 import {
   deleteMerk,
   getMerk,
@@ -60,6 +65,7 @@ router.post("/ongkir", ongkir);
 router.get("/provinces", province);
 router.get("/cities", city);
 router.get("/subdistricts", subdistrict);
+router.get("/spesifik", subdistrictbyid);
 // router.get('/products/category',getProductBycategori)
 
 //payment history

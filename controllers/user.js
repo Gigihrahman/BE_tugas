@@ -94,8 +94,10 @@ export const register = async (req, res) => {
 
 export const editProfileUser = async (req, res) => {
   const tokenUser = req.headers["token"];
+  console.log(req.headers);
 
   const decoded = jwtDecode(tokenUser);
+  console.log(decoded);
   const idUser = decoded.id;
   const username = req.body.username;
   const numberPhone = req.body.numberPhone;
@@ -106,7 +108,7 @@ export const editProfileUser = async (req, res) => {
   const city = req.body.city || 0;
   const subdistricts = req.body.subdistrict || 0;
   const full_address = req.body.full_address;
-  if (!username || !confirmPassword || !password) {
+  if (!username || !confirmPassword || !password || !full_address) {
     return res
       .status(401)
       .json({ message: "missing required data", success: false });
@@ -140,6 +142,7 @@ export const getUserByid = async (req, res) => {
   const decoded = jwtDecode(tokenUser);
   const idUser = decoded.id;
 
-  const merk = await User.findOne({ where: { id: idUser } });
-  res.status(200).json({ merk });
+  const user = await User.findOne({ where: { id: idUser } });
+  res.status(200).json({ user });
 };
+

@@ -85,7 +85,7 @@ export const detailPaymentAdmin = async (req, res) => {
   res.status(200).json({ data });
 };
 
-
+//add notif
 export const notifPaymentAdmin = async (req, res) => {
   const { order_id, transaction_id, transaction_status } = req.body;
   await Payment.update(
@@ -96,6 +96,7 @@ export const notifPaymentAdmin = async (req, res) => {
       },
     }
   );
+  res.status(200).json({ status: "success", message: "OK" });
 };
 
 
