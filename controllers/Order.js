@@ -26,7 +26,7 @@ export const order = async (req, res) => {
     const decoded = jwtDecode(tokenUser);
     const idUser = decoded.id;
     const destinasi = await User.findOne({ where: { id: idUser } });
-    const status = "Pending";
+    const status = "pending";
     // id harusnya diganti data dari jwt decode
     console.log(cart);
     const name = destinasi.username;
