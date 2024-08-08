@@ -20,6 +20,7 @@ export const historyPaymentUser = async (req, res) => {
           model: Product,
         },
       },
+      order: [["createdAt", "DESC"]],
     });
     res.status(200).json({ data });
   } catch (error) {
@@ -56,6 +57,7 @@ export const historyPaymentAdmin = async (req, res) => {
           model: Product,
         },
       },
+      order: [["createdAt", "DESC"]],
     });
     res.status(200).json({ data });
   } catch (error) {
