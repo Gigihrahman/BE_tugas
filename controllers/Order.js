@@ -8,12 +8,14 @@ import { cekCost } from "../coba.js";
 import { jwtDecode } from "jwt-decode";
 import { User } from "../models/allModel.js";
 import db from "../config/Database.js";
+import dotenv from "dotenv";
+dotenv.config();
 const sequelize = db;
 
 const key = process.env.SERVER_KEY;
 let snap = new Midtrans.Snap({
   isProduction: false,
-  serverKey: "SB-Mid-server-Z0rvNu6HVUeHLkPVbFWgDzHt",
+  serverKey: key,
 });
 export const order = async (req, res) => {
   const transaction = await sequelize.transaction();
