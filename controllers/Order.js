@@ -53,7 +53,7 @@ export const order = async (req, res) => {
     let parameter = {
       transaction_details: {
         order_id: id_transaction,
-        gross_amount: total_prices,
+        gross_amount: endPrice,
       },
     };
 
