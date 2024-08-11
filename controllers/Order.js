@@ -11,7 +11,10 @@ import db from "../config/Database.js";
 import dotenv from "dotenv";
 dotenv.config();
 const sequelize = db;
-const production = process.env.MIDTRANS_PRODUCTION;
+const myEnvVar = process.env.MIDTRANS_PRODUCTION;
+const production = myEnvVar === "false" ? false : myEnvVar === "true";
+
+
 const key = process.env.SERVER_KEY;
 let snap = new Midtrans.Snap({
   isProduction: production,

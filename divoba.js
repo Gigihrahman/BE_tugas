@@ -1,6 +1,5 @@
-import User from "./models/userModel.js";
-
-const destinasi = await User.findOne({ where: { id: 1 } });
-province
-
-console.log(destinasi.subdistricts_code);
+import dotenv from "dotenv";
+dotenv.config();
+const myEnvVar = process.env.MIDTRANS_PRODUCTION;
+const production = myEnvVar === "false" ? false : myEnvVar === "true";
+console.log(production);
