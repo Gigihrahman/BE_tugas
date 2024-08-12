@@ -88,7 +88,7 @@ export const register = async (req, res) => {
     full_address: full_address,
   });
 
-  const token = jwt.sign({ id: user.id }, "secretkey");
+  const token = jwt.sign({ id: user.id, username: user.username }, "secretkey");
   res.status(200).send({ id: user.id, username: user.username, token: token });
 };
 
